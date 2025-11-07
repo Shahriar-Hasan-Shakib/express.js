@@ -172,6 +172,33 @@
 
 ---
 
+### [অধ্যায় ১৪: WebSocket & Real-time Communication](./14-websocket/)
+- [১৪.১ Socket.io এবং Real-time Apps](./14-websocket/01-socketio-realtime.md)
+  - WebSocket কী এবং কেন ব্যবহার করবেন
+  - Socket.io Installation এবং Setup (ES6)
+  - Real-time Chat Application
+  - Rooms এবং Namespaces
+  - Authentication with Socket.io
+  - Broadcasting Strategies
+  - Error Handling এবং Reconnection
+  - Scaling with Redis Adapter
+
+---
+
+### [অধ্যায় ১৫: REST API Design & Documentation](./15-rest-api/)
+- [১৫.১ RESTful API এবং Swagger](./15-rest-api/01-rest-api-swagger.md)
+  - REST API Principles
+  - RESTful URL Design Best Practices
+  - HTTP Methods সঠিক ব্যবহার
+  - API Versioning Strategies
+  - Swagger/OpenAPI Documentation
+  - HATEOAS Implementation
+  - Pagination, Filtering, Sorting
+  - Error Response Standardization
+  - API Security Best Practices
+
+---
+
 ## 🎯 কীভাবে শিখবেন
 
 ১. **ক্রমানুসারে পড়ুন**: Chapter 1 থেকে শুরু করে ক্রমানুসারে এগিয়ে যান
@@ -255,6 +282,9 @@ Browser এ যান: `http://localhost:3000`
 ✅ Testing (Unit, Integration)  
 ✅ Performance optimization  
 ✅ Production deployment  
+✅ Real-time applications (Socket.io)  
+✅ API documentation (Swagger/OpenAPI)  
+✅ WebSocket integration  
 ✅ Real-world project structure  
 
 ---
@@ -263,9 +293,11 @@ Browser এ যান: `http://localhost:3000`
 
 - ✅ **সম্পূর্ণ বাংলায়**: সহজ ভাষায় বিস্তারিত ব্যাখ্যা
 - ✅ **Latest Version**: Express 5.1.0 (November 2025)
+- ✅ **ES6+ Syntax**: Modern JavaScript (import/export)
 - ✅ **Practical Examples**: প্রতিটি concept এর জন্য working code
 - ✅ **Production Ready**: Real-world best practices
-- ✅ **Comprehensive**: Basic থেকে Advanced সব topics
+- ✅ **Comprehensive**: 15 Chapters - Basic থেকে Advanced
+- ✅ **Common Mistakes**: প্রতিটি lesson এ সাধারণ ভুল ও সমাধান
 - ✅ **Verified Content**: Official documentation থেকে যাচাইকৃত
 
 ---

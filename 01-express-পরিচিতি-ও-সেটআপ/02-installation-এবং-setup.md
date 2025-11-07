@@ -173,17 +173,33 @@ Final `package.json`:
 
 ## ধাপ ৪: প্রথম Express Application তৈরি
 
-### `index.js` file তৈরি করুন:
+### `package.json` এ ES6 Modules Enable করুন:
+
+```json
+{
+  "name": "my-express-app",
+  "version": "1.0.0",
+  "type": "module",  // ⭐ এটি যোগ করুন ES6 modules এর জন্য
+  "description": "আমার প্রথম Express.js অ্যাপ্লিকেশন",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  }
+}
+```
+
+### `index.js` file তৈরি করুন (ES6 Syntax):
 
 ```javascript
-// Express module import করুন
-const express = require('express');
+// Express module import করুন (ES6 syntax)
+import express from 'express';
 
 // Express application তৈরি করুন
 const app = express();
 
 // Port number নির্ধারণ
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // Root route (হোম পেজ)
 app.get('/', (req, res) => {
@@ -204,11 +220,19 @@ app.get('/contact', (req, res) => {
   });
 });
 
+// 404 Handler
+app.use((req, res) => {
+  res.status(404).send('পেজ খুঁজে পাওয়া যায়নি! 😕');
+});
+
 // Server চালু করুন
 app.listen(PORT, () => {
   console.log(`✅ সার্ভার চলছে: http://localhost:${PORT}`);
+  console.log(`📡 Environment: ${process.env.NODE_ENV || 'development'}`);
 });
 ```
+
+> **💡 Note:** যদি CommonJS (require/module.exports) ব্যবহার করতে চান, তাহলে `package.json` থেকে `"type": "module"` সরিয়ে দিন এবং `import` এর জায়গায় `require()` ব্যবহার করুন।
 
 ### Application চালান:
 
@@ -399,32 +423,57 @@ app.listen(PORT, () => {
 
 ## সাধারণ সমস্যা এবং সমাধান (Common Mistakes & Fixes)
 
-### ❌ সমস্যা ১: `Cannot find module 'express'`
+### ❌ সমস্যা ১: ES6 modules error - `require is not defined`
 
-**কারণ**: Express install করা হয়নি
+**কারণ**: package.json এ `"type": "module"` আছে কিন্তু `require()` ব্যবহার করছেন
+
+**ভুল কোড**:
+```javascript
+// ❌ ভুল - ES6 modules enabled কিন্তু CommonJS syntax
+const express = require('express'); // Error!
+```
+
+**সমাধান**:
+```javascript
+// ✅ সঠিক - ES6 import ব্যবহার করুন
+import express from 'express';
+
+// অথবা package.json থেকে "type": "module" সরিয়ে দিন
+```
+
+### ❌ সমস্যা ২: `Cannot find module 'express'`
+
+**কারণ**: Express install করা হয়নি বা node_modules missing
 
 **সমাধান**:
 ```bash
+# Express install করুন
 npm install express
+
+# যদি node_modules delete হয়ে যায়
+npm install  # সব dependencies reinstall হবে
 ```
 
-### ❌ সমস্যা ২: `Port 3000 is already in use`
+### ❌ সমস্যা ৩: `Port 3000 is already in use`
 
 **কারণ**: অন্য কোনো application ইতিমধ্যে port 3000 ব্যবহার করছে
 
 **সমাধান**:
 ```bash
-# Process খুঁজে বের করুন (Linux/Mac)
+# Linux/Mac এ process খুঁজে বের করুন
 lsof -i :3000
-
-# Process kill করুন
 kill -9 <PID>
 
+# Windows এ
+netstat -ano | findstr :3000
+taskkill /PID <PID> /F
+
 # অথবা অন্য port ব্যবহার করুন
-# .env ফাইলে PORT=4000 set করুন
+# .env ফাইলে
+PORT=4000
 ```
 
-### ❌ সমস্যা ৩: `nodemon: command not found`
+### ❌ সমস্যা ৪: `nodemon: command not found`
 
 **কারণ**: nodemon globally install করা নেই
 
@@ -433,16 +482,19 @@ kill -9 <PID>
 # Locally install করুন (recommended)
 npm install --save-dev nodemon
 
-# এবং package.json এ script যোগ করুন
+# package.json এ script যোগ করুন
 "scripts": {
   "dev": "nodemon index.js"
 }
 
 # তারপর চালান
 npm run dev
+
+# Global install করতে চাইলে (not recommended)
+npm install -g nodemon
 ```
 
-### ❌ সমস্যা ৪: `.env` file কাজ করছে না
+### ❌ সমস্যা ৫: `.env` file কাজ করছে না
 
 **কারণ**: dotenv package install করা হয়নি বা load করা হয়নি
 
@@ -450,24 +502,95 @@ npm run dev
 ```bash
 # Install করুন
 npm install dotenv
-
-# index.js এর শুরুতে যোগ করুন
-require('dotenv').config();
 ```
 
-### ❌ সমস্যা ৫: `app.listen is not a function`
+```javascript
+// CommonJS এ
+require('dotenv').config();
 
-**কারণ**: Express সঠিকভাবে import করা হয়নি
+// ES6 modules এ
+import 'dotenv/config';
+// অথবা
+import dotenv from 'dotenv';
+dotenv.config();
+```
+
+### ❌ সমস্যা ৬: `app.listen is not a function`
+
+**কারণ**: Express সঠিকভাবে instantiate করা হয়নি
+
+**ভুল কোড**:
+```javascript
+// ❌ ভুল
+import express from 'express';
+const app = express; // Forgot parentheses!
+```
+
+**সঠিক কোড**:
+```javascript
+// ✅ সঠিক
+import express from 'express';
+const app = express(); // Call the function
+```
+
+### ❌ সমস্যা ৭: File extension error (.mjs vs .js)
+
+**কারণ**: ES6 modules ব্যবহার করলে file extension নিয়ে সমস্যা
+
+**সমাধান**:
+```json
+// Option 1: package.json এ "type": "module" যোগ করুন
+{
+  "type": "module"
+}
+// এখন .js files ES6 modules হিসেবে কাজ করবে
+
+// Option 2: .mjs extension ব্যবহার করুন
+// index.mjs (ES6 modules)
+// index.js (CommonJS)
+```
+
+### ❌ সমস্যা ৮: __dirname is not defined (ES6 modules এ)
+
+**কারণ**: ES6 modules এ `__dirname` এবং `__filename` available নেই
 
 **সমাধান**:
 ```javascript
-// ভুল
-const express = require('express');
-const app = express; // ❌ Wrong
+// ✅ ES6 modules এ
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
-// সঠিক
-const express = require('express');
-const app = express(); // ✅ Correct
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+```
+
+### ❌ সমস্যা ৯: npm start কাজ করছে না
+
+**কারণ**: package.json এ start script missing বা ভুল
+
+**সমাধান**:
+```json
+{
+  "scripts": {
+    "start": "node index.js",  // ✅ Correct entry point
+    "dev": "nodemon index.js"
+  }
+}
+```
+
+### ❌ সমস্যা ১০: Permission denied error (Linux/Mac)
+
+**কারণ**: Port 80 বা 443 ব্যবহার করতে root permission দরকার
+
+**সমাধান**:
+```bash
+# Option 1: Higher port ব্যবহার করুন (1024+)
+PORT=3000 npm start
+
+# Option 2: sudo ব্যবহার করুন (not recommended)
+sudo npm start
+
+# Option 3: Nginx reverse proxy ব্যবহার করুন (best practice)
 ```
 
 ## Best Practices

@@ -43,9 +43,10 @@ server.listen(3000, () => {
 });
 ```
 
-**Express.js এর সাথে (With Express):**
+**Express.js এর সাথে (With Express - ES6 Syntax):**
 ```javascript
-const express = require('express');
+import express from 'express';
+
 const app = express();
 
 app.get('/', (req, res) => {
@@ -62,6 +63,8 @@ app.listen(3000, () => {
 ```
 
 দেখতেই পাচ্ছেন Express কতটা সহজ এবং পরিষ্কার!
+
+> **💡 ES6 Modules Note**: আধুনিক JavaScript এ `import`/`export` syntax ব্যবহার করা হয়। এটি ব্যবহার করার জন্য আপনার `package.json` এ `"type": "module"` যোগ করতে হবে।
 
 ## কেন Express.js ব্যবহার করবেন?
 
@@ -191,6 +194,95 @@ app.use((err, req, res, next) => {
 
 ### ❌ ভুল: Express এ কোনো structure নেই
 ✅ সঠিক: Flexibility আছে, তবে best practices follow করলে organized code লেখা যায়
+
+---
+
+## ⚠️ Common Mistakes & Fixes
+
+### ভুল ১: `require()` ব্যবহার করা কিন্তু ES6 modules enable করা
+
+```javascript
+// ❌ ভুল - ES6 modules enabled কিন্তু require() ব্যবহার
+const express = require('express'); // Error: require is not defined
+```
+
+**সমাধান:**
+```javascript
+// ✅ সঠিক - import ব্যবহার করুন
+import express from 'express';
+
+// অথবা package.json এ "type": "module" না দিলে require() ব্যবহার করুন
+```
+
+### ভুল ২: Express vs Node.js এর পার্থক্য না বোঝা
+
+```javascript
+// ❌ ভুল - মনে করা Express ছাড়া কিছু করা যাবে না
+// Express একটি framework, Node.js হলো runtime
+```
+
+**সঠিক ধারণা:**
+- **Node.js** = JavaScript runtime environment
+- **Express** = Node.js এর উপর built web framework
+- Express ছাড়াও অন্য framework (Koa, Fastify) ব্যবহার করা যায়
+
+### ভুল ৩: Express দিয়ে CPU-intensive কাজ করা
+
+```javascript
+// ❌ ভুল - Express route এ heavy computation
+app.get('/process-video', (req, res) => {
+  // Video encoding - এটি server block করবে
+  const result = heavyVideoProcessing(); // Blocking!
+  res.send(result);
+});
+```
+
+**সমাধান:**
+```javascript
+// ✅ সঠিক - Worker threads বা separate service ব্যবহার করুন
+import { Worker } from 'worker_threads';
+
+app.get('/process-video', async (req, res) => {
+  const worker = new Worker('./video-worker.js');
+  worker.postMessage(videoData);
+  
+  worker.on('message', (result) => {
+    res.send(result);
+  });
+});
+```
+
+### ভুল ৪: Express installation এ version specify না করা
+
+```bash
+# ⚠️ সতর্কতা - latest version সবসময় stable নাও হতে পারে
+npm install express
+```
+
+**Better Approach:**
+```bash
+# ✅ সঠিক - specific stable version install করুন
+npm install express@5.1.0
+
+# অথবা LTS version চাইলে
+npm install express@4
+```
+
+### ভুল ৫: Express শুধু API তৈরির জন্য মনে করা
+
+```javascript
+// Express দিয়ে শুধু API নয়, full web application ও তৈরি করা যায়
+```
+
+**Express এর Multiple Use Cases:**
+- ✅ RESTful APIs
+- ✅ Server-Side Rendered (SSR) applications
+- ✅ Static file serving
+- ✅ Real-time applications (with Socket.io)
+- ✅ Microservices
+- ✅ Proxy servers
+
+---
 
 ## পরবর্তী পদক্ষেপ
 
